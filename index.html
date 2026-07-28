@@ -1,108 +1,746 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="h-full bg-slate-950 text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PiroPlanet.pl - Śledzenie Przesyłek</title>
+    <title>PiroPlanet.pl - Śledzenie Zamówień i Paczek</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        piro: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            bottom: 0;
+            left: 15px;
+            width: 2px;
+            background: linear-gradient(to bottom, #ea580c, #334155);
+            z-index: 0;
+        }
+        .firework-glow {
+            box-shadow: 0 0 25px -5px rgba(234, 88, 12, 0.35);
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="h-full font-sans bg-slate-950 text-slate-100 flex flex-col min-h-screen selection:bg-piro-600 selection:text-white">
 
-    <!-- Nawigacja -->
-    <nav class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="flex items-center space-x-2">
-                <i class="fa-solid font-bold text-orange-500 text-2xl fa-fire"></i>
-                <span class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">PiroPlanet.pl</span>
-            </a>
-            <a href="admin.html" class="px-4 py-2 rounded-lg font-semibold bg-slate-700 text-slate-300 hover:bg-slate-600 transition text-sm">
-                <i class="fa-solid fa-user-gear mr-2"></i>Panel Admina
-            </a>
-        </div>
-    </nav>
-
-    <!-- Zawartość -->
-    <main class="max-w-6xl mx-auto p-4 flex-grow w-full space-y-8 py-8">
-        
-        <!-- Wyszukiwarka -->
-        <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-xl max-w-2xl mx-auto text-center">
-            <h1 class="text-3xl font-extrabold mb-2 text-white">Śledź swoją paczkę</h1>
-            <p class="text-slate-400 mb-6">Wpisz numer przesyłki, aby sprawdzić status zamówienia.</p>
-            <form id="tracking-form" class="flex gap-2">
-                <input type="text" id="tracking-input" placeholder="np. PP-1001" required
-                    class="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-orange-500 text-lg uppercase tracking-wider text-white">
-                <button type="submit" class="px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl transition shadow-lg shadow-orange-600/30">
-                    Szukaj
-                </button>
-            </form>
-        </div>
-
-        <!-- Wynik Śledzenia -->
-        <div id="tracking-result" class="hidden bg-slate-800 rounded-2xl border border-slate-700 p-6 md:p-8 shadow-xl space-y-8">
-            
-            <div class="flex flex-wrap justify-between items-start gap-4 border-b border-slate-700 pb-6">
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('search')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-piro-600 via-amber-500 to-yellow-400 flex items-center justify-center text-white shadow-lg shadow-piro-600/30">
+                    <i class="fa-solid fa-fire-flame-curved text-xl"></i>
+                </div>
                 <div>
-                    <span class="text-sm text-slate-400 font-semibold uppercase tracking-wider">Numer przesyłki</span>
-                    <h2 id="res-id" class="text-3xl font-black text-orange-500"></h2>
-                </div>
-                <div class="text-right">
-                    <span class="text-sm text-slate-400 font-semibold uppercase tracking-wider block">Płatność</span>
-                    <span id="res-payment" class="inline-block mt-1 px-3 py-1 rounded-full text-sm font-bold"></span>
+                    <span class="font-black text-xl tracking-tight block leading-none bg-gradient-to-r from-white via-slate-200 to-piro-500 bg-clip-text text-transparent">PiroPlanet<span class="text-piro-500">.pl</span></span>
+                    <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">System Śledzenia Zamówień</span>
                 </div>
             </div>
 
-            <!-- Pasek Postępu -->
-            <div>
-                <h3 class="text-lg font-bold mb-6 text-slate-300">Status przesyłki</h3>
-                <div class="relative flex justify-between items-center max-w-4xl mx-auto px-4">
-                    <div class="absolute top-1/2 left-0 right-0 h-1 bg-slate-700 -translate-y-1/2 z-0"></div>
-                    <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-orange-500 -translate-y-1/2 z-0 transition-all duration-500" style="width: 0%;"></div>
-
-                    <div class="relative z-10 flex flex-col items-center text-center step-node" data-step="0">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-slate-700 text-slate-400 border-4 border-slate-800 transition-all">1</div>
-                        <span class="text-xs md:text-sm font-semibold mt-2 text-slate-400">Wyruszyło<br>z hurtowni</span>
-                    </div>
-                    <div class="relative z-10 flex flex-col items-center text-center step-node" data-step="1">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-slate-700 text-slate-400 border-4 border-slate-800 transition-all">2</div>
-                        <span class="text-xs md:text-sm font-semibold mt-2 text-slate-400">W drodze<br>do sklepu</span>
-                    </div>
-                    <div class="relative z-10 flex flex-col items-center text-center step-node" data-step="2">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-slate-700 text-slate-400 border-4 border-slate-800 transition-all">3</div>
-                        <span class="text-xs md:text-sm font-semibold mt-2 text-slate-400">W trakcie<br>pakowania</span>
-                    </div>
-                    <div class="relative z-10 flex flex-col items-center text-center step-node" data-step="3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-slate-700 text-slate-400 border-4 border-slate-800 transition-all">4</div>
-                        <span class="text-xs md:text-sm font-semibold mt-2 text-slate-400">Gotowa<br>do odbioru</span>
-                    </div>
-                </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <a href="https://piroplanet.pl" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Sklep PiroPlanet</span>
+                </a>
+                <button onclick="openAdminModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-sliders text-piro-500"></i>
+                    <span>Baza Paczek (JSON)</span>
+                </button>
             </div>
-
-            <!-- Details -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-700">
-                <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
-                    <h4 class="text-slate-400 text-sm font-bold uppercase mb-3"><i class="fa-solid fa-user text-orange-500 mr-2"></i>Dane Odbiorcy</h4>
-                    <p id="res-recipient-name" class="font-bold text-lg text-white"></p>
-                    <p id="res-recipient-address" class="text-slate-300 text-sm mt-1 whitespace-pre-line"></p>
-                    <p id="res-recipient-phone" class="text-slate-400 text-sm mt-2"></p>
-                </div>
-
-                <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
-                    <h4 class="text-slate-400 text-sm font-bold uppercase mb-3"><i class="fa-solid fa-box-open text-orange-500 mr-2"></i>Zawartość Paczki</h4>
-                    <ul id="res-items" class="list-disc list-inside text-slate-300 space-y-1 text-sm"></ul>
-                </div>
-            </div>
-
         </div>
+    </header>
 
-        <div id="tracking-error" class="hidden bg-red-900/30 border border-red-500 text-red-200 p-4 rounded-xl text-center max-w-2xl mx-auto">
-            Nie znaleziono przesyłki o podanym numerze. Sprawdź poprawność wpisanego kodu.
-        </div>
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+        <!-- Search Section -->
+        <section id="section-search" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-6 sm:p-10 text-white shadow-2xl relative overflow-hidden firework-glow">
+                <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none text-piro-500">
+                    <i class="fa-solid fa-rocket text-[240px]"></i>
+                </div>
+                
+                <div class="max-w-2xl relative z-10">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-piro-500/10 text-piro-500 text-xs font-bold tracking-wide uppercase mb-4 border border-piro-500/20">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span>Śledzenie Przesyłek Pirotechnicznych</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-4">Gdzie jest Twoja paczka z PiroPlanet?</h1>
+                    <p class="text-slate-400 text-sm sm:text-base mb-6 leading-relaxed">Sprawdź aktualny status realizacji zamówienia, drogę kuriera ADR oraz planowaną datę doręczenia Twoich fajerwerków.</p>
+                    
+                    <form onsubmit="handleSearch(event)" class="flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+                            <input type="text" id="tracking-input" placeholder="Wpisz numer zamówienia / przesyłki (np. PIR-984210)" required
+                                class="w-full pl-12 pr-4 py-4 rounded-2xl text-white bg-slate-950/90 border border-slate-700/80 focus:border-piro-500 shadow-inner focus:outline-none focus:ring-4 focus:ring-piro-500/20 font-mono text-base tracking-wide uppercase placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500 transition">
+                        </div>
+                        <button type="submit" class="px-8 py-4 bg-gradient-to-r from-piro-600 to-amber-600 hover:from-piro-500 hover:to-amber-500 active:scale-95 transition-all duration-150 text-white font-bold rounded-2xl shadow-lg shadow-piro-600/30 flex items-center justify-center space-x-2 shrink-0">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Sprawdź</span>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                        <span class="text-slate-500 font-medium">Szybki podgląd demonstracyjny:</span>
+                        <button onclick="quickTrack('PIR-984210')" class="bg-slate-800/80 hover:bg-slate-700 hover:text-white px-2.5 py-1 rounded-lg font-mono transition border border-slate-700">PIR-984210</button>
+                        <button onclick="quickTrack('PIR-554109')" class="bg-slate-800/80 hover:bg-slate-700 hover:text-white px-2.5 py-1 rounded-lg font-mono transition border border-slate-700">PIR-554109</button>
+                        <button onclick="quickTrack('PIR-112048')" class="bg-slate-800/80 hover:bg-slate-700 hover:text-white px-2.5 py-1 rounded-lg font-mono transition border border-slate-700">PIR-112048</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tracking-result-container" class="hidden animate-in fade-in duration-300">
+                <!-- Parcel Header Details -->
+                <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 mb-6 shadow-xl">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-6 gap-4">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span id="courier-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-piro-500 border border-slate-700">Kurier DPD ADR</span>
+                                <span class="text-xs text-slate-500">Numer przesyłki:</span>
+                                <span id="res-tracking-num" class="font-mono font-bold text-white tracking-wider">---</span>
+                            </div>
+                            <h2 id="res-title" class="text-2xl font-bold text-white">Nazwa Zamówienia PiroPlanet</h2>
+                        </div>
+                        <div id="status-badge" class="self-start md:self-center px-4 py-2 rounded-2xl flex items-center space-x-2 font-bold text-sm">
+                            <!-- Dynamic Badge Content -->
+                        </div>
+                    </div>
+
+                    <div class="py-8 border-b border-slate-800">
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6">Etap Dostawy PiroPlanet</p>
+                        <div class="grid grid-cols-4 gap-2 relative">
+                            <!-- Step 1 -->
+                            <div class="step-item text-center flex flex-col items-center">
+                                <div id="step-icon-1" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all">1</div>
+                                <span class="text-xs font-semibold text-slate-400">Zamówione</span>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="step-item text-center flex flex-col items-center">
+                                <div id="step-icon-2" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all">2</div>
+                                <span class="text-xs font-semibold text-slate-400">Spakowane ADR</span>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="step-item text-center flex flex-col items-center">
+                                <div id="step-icon-3" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all">3</div>
+                                <span class="text-xs font-semibold text-slate-400">W trasie</span>
+                            </div>
+                            <!-- Step 4 -->
+                            <div class="step-item text-center flex flex-col items-center">
+                                <div id="step-icon-4" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all">4</div>
+                                <span class="text-xs font-semibold text-slate-400">Odebrana</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6">
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                            <span class="text-xs text-slate-500 block mb-1">Przewidywane doręczenie</span>
+                            <span id="res-est-date" class="font-bold text-slate-200 block text-sm">--</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                            <span class="text-xs text-slate-500 block mb-1">Odbiorca / Adres</span>
+                            <span id="res-destination" class="font-bold text-slate-200 block text-sm">--</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                            <span class="text-xs text-slate-500 block mb-1">Nadawca</span>
+                            <span id="res-sender" class="font-bold text-slate-200 block text-sm">--</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                            <span class="text-xs text-slate-500 block mb-1">Uwagi / Kod Odbioru</span>
+                            <span id="res-pickup-code" class="font-mono font-bold text-piro-500 block text-sm">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-xl">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center space-x-2.5">
+                        <i class="fa-solid fa-clock-rotate-left text-piro-500"></i>
+                        <span>Szczegółowa historia przesyłki</span>
+                    </h3>
+                    
+                    <div id="timeline-list" class="relative timeline-line space-y-6">
+                        <!-- Dynamic Events Inserted Here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="tracking-not-found" class="hidden bg-slate-900 rounded-3xl border border-slate-800 p-12 text-center shadow-xl">
+                <div class="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Brak przesyłki o tym numerze</h3>
+                <p class="text-slate-400 max-w-md mx-auto mb-6 text-sm">Nie odnaleziono podanego numeru śledzenia w bazie danych PiroPlanet.pl. Upewnij się, że wpisany kod jest poprawny lub dodaj go w panelu zarządczym.</p>
+                <button onclick="openAdminModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition border border-slate-700">
+                    Otwórz Zarządzanie Paczkami
+                </button>
+            </div>
+        </section>
     </main>
 
-    <script src="js/data.js"></script>
-    <script src="js/client.js"></script>
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto py-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-500 space-y-3 sm:space-y-0">
+            <p>&copy; 2026 PiroPlanet.pl - Oficjalny System Śledzenia Paczek.</p>
+            <div class="flex justify-center items-center space-x-4">
+                <button onclick="downloadJSONFile()" class="hover:text-piro-500 font-semibold transition flex items-center space-x-1.5 text-slate-400">
+                    <i class="fa-solid fa-download text-piro-500"></i>
+                    <span>Pobierz paczki.json dla GitHub</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-database text-piro-500 text-lg"></i>
+                    <h3 class="font-bold text-lg text-white">Zarządzanie Baza Paczek PiroPlanet</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white transition text-xl p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+
+                <!-- GitHub Pages Deployment Guide Banner -->
+                <div class="bg-piro-950/60 border border-piro-800/60 rounded-2xl p-4 text-xs text-piro-100 flex items-start space-x-3">
+                    <i class="fa-solid fa-circle-info text-piro-500 text-base mt-0.5 shrink-0"></i>
+                    <div class="leading-relaxed">
+                        <strong class="font-bold text-white block mb-1">Instrukcja publikacji w serwisie GitHub Pages:</strong>
+                        Możesz edytować paczki poniżej. Aby nowo dodane przesyłki były widoczne dla każdego klienta po wejściu na Twoją stronę w GitHub Pages, kliknij przycisk <span class="font-bold text-white">"Eksportuj paczki.json"</span> i podmień plik <code class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 font-mono text-piro-500">paczki.json</code> w głównym katalogu repozytorium GitHub.
+                    </div>
+                </div>
+
+                <!-- Controls Header Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h4 class="font-bold text-slate-200">Lista Przesyłek PiroPlanet (<span id="parcel-count" class="text-piro-500">0</span>)</h4>
+                    <div class="flex gap-2">
+                        <button onclick="openAddParcelForm()" class="px-3.5 py-2 bg-piro-600 hover:bg-piro-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-md shadow-piro-600/20">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Dodaj Paczkę</span>
+                        </button>
+                        <button onclick="downloadJSONFile()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-slate-700">
+                            <i class="fa-solid fa-file-export text-piro-500"></i>
+                            <span>Eksportuj paczki.json</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="parcel-form-container" class="hidden bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h5 id="form-title" class="font-bold text-sm text-white">Dodaj nową przesyłkę</h5>
+                        <button onclick="closeParcelForm()" class="text-xs text-slate-400 hover:text-slate-200">Anuluj</button>
+                    </div>
+
+                    <form id="parcel-form" onsubmit="saveParcel(event)" class="space-y-4">
+                        <input type="hidden" id="form-id">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Numer przesyłki</label>
+                                <input type="text" id="form-tracking" required placeholder="np. PIR-984210" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono uppercase focus:border-piro-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Przewoźnik / Kurier</label>
+                                <select id="form-courier" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                                    <option value="Kurier DPD (Materiały ADR / Wybuchowe)">Kurier DPD (ADR / Pirotechnika)</option>
+                                    <option value="InPost Paczkomaty 24/7">InPost Paczkomaty 24/7</option>
+                                    <option value="DHL Express Specjalny">DHL Express Specjalny</option>
+                                    <option value="Pocztex Kurier">Pocztex Kurier</option>
+                                    <option value="Odbiór Osobisty Magazyn PiroPlanet">Odbiór Osobisty Magazyn</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 font-medium mb-1">Zawartość zamówienia</label>
+                                <input type="text" id="form-title-input" required placeholder="np. Wyrzutnia Cobra 100s + Petardy FP3 + Rakiety Jupiter" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Status</label>
+                                <select id="form-status" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                                    <option value="REGISTERED">Zarejestrowana w PiroPlanet (Krok 1)</option>
+                                    <option value="IN_TRANSIT">Spakowane ADR / W trasie (Krok 2-3)</option>
+                                    <option value="OUT_FOR_DELIVERY">W doręczeniu u kuriera (Krok 3)</option>
+                                    <option value="DELIVERED">Dostarczono (Krok 4)</option>
+                                    <option value="EXCEPTION">Opóźnienie / Weryfikacja ADR</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Przewidywany czas dostawy</label>
+                                <input type="text" id="form-est" placeholder="np. Jutro do godz. 16:00" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Nadawca</label>
+                                <input type="text" id="form-sender" value="PiroPlanet.pl - Magazyn Główny" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 font-medium mb-1">Odbiorca / Miejscowość</label>
+                                <input type="text" id="form-dest" placeholder="np. Marek Nowak (Poznań)" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 font-medium mb-1">Kod Odbioru / Pkt Dostawy</label>
+                                <input type="text" id="form-pickup" placeholder="np. Wymagany dowód osobisty 18+ / Kod: 8849" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-piro-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-2 pt-2">
+                            <button type="button" onclick="closeParcelForm()" class="px-4 py-2 border border-slate-800 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">Anuluj</button>
+                            <button type="submit" class="px-5 py-2 bg-piro-600 hover:bg-piro-500 text-white rounded-xl text-xs font-bold transition">Zapisz Paczkę</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="border border-slate-800 rounded-2xl overflow-hidden">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3 font-semibold">Numer / Zawartość</th>
+                                <th class="p-3 font-semibold">Przewoźnik</th>
+                                <th class="p-3 font-semibold">Status</th>
+                                <th class="p-3 font-semibold text-right">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-parcel-table-body" class="divide-y divide-slate-800/60 bg-slate-900/50">
+                            <!-- Dynamic Table Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="px-6 py-3 bg-slate-950 border-t border-slate-800 flex justify-end">
+                <button onclick="closeAdminModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition border border-slate-700">
+                    Zamknij
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-2xl shadow-2xl text-sm font-medium transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-3 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message">Powiadomienie</span>
+    </div>
+
+    <script>
+        const DEFAULT_PACKAGES = [
+            {
+                id: "PIR-984210",
+                trackingNumber: "PIR-984210",
+                courier: "Kurier DPD (Materiały ADR / Wybuchowe)",
+                title: "Wyrzutnia Cobra 100 Strzałów 30mm + Rakiety Jupiter",
+                status: "OUT_FOR_DELIVERY",
+                estimatedDelivery: "Dzisiaj do godz. 17:30",
+                sender: "PiroPlanet.pl - Magazyn Główny",
+                destination: "Warszawa, ul. Marszałkowska 42",
+                pickupCode: "Wymagane ukończone 18 lat (ADR)",
+                timeline: [
+                    { date: "2026-07-28 08:30", title: "Wydano kurierowi do doręczenia", location: "Oddział Kurierski Warszawa West", desc: "Przesyłka spakowana i zabezpieczona zgodnie z wymogami ADR znajduje się u kuriera." },
+                    { date: "2026-07-28 05:10", title: "Przyjęto w centrum dystrybucji", location: "Hub Przeładunkowy Warszawa", desc: "Automatyczne sortowanie paczek pirotechnicznych." },
+                    { date: "2026-07-27 19:40", title: "W trasie między magazynami", location: "Sortownia Centralna Poznań", desc: "Przesyłka opuściła hub regionalny PiroPlanet." },
+                    { date: "2026-07-27 14:15", title: "Zamówienie spakowane i oznakowane ADR", location: "Magazyn Główny PiroPlanet", desc: "Paczka przekazana przewoźnikowi." }
+                ]
+            },
+            {
+                id: "PIR-554109",
+                trackingNumber: "PIR-554109",
+                courier: "InPost Paczkomaty 24/7",
+                title: "Zestaw Petard FP3 + Dymy Kolorowe FDF",
+                status: "DELIVERED",
+                estimatedDelivery: "27 Lipca 2026 (Dostarczono)",
+                sender: "PiroPlanet.pl",
+                destination: "Kraków (Paczkomat KRK08M)",
+                pickupCode: "Kod odbioru: 948201",
+                timeline: [
+                    { date: "2026-07-27 16:20", title: "Przesyłka Odebrana", location: "Paczkomat KRK08M", desc: "Odbiorca odebrał paczkę ze skrytki." },
+                    { date: "2026-07-27 11:05", title: "Umieszczono w Paczkomacie", location: "Paczkomat KRK08M", desc: "Paczka oczekuje na odbiór." },
+                    { date: "2026-07-26 15:30", title: "Zamówienie przyjęte w sklepie", location: "PiroPlanet.pl", desc: "Płatność zaksięgowana." }
+                ]
+            },
+            {
+                id: "PIR-112048",
+                trackingNumber: "PIR-112048",
+                courier: "DHL Express Specjalny",
+                title: "Zestaw Pokazowy Pyro-Show 500g NEM",
+                status: "IN_TRANSIT",
+                estimatedDelivery: "Jutro, godz. 10:00 - 14:00",
+                sender: "PiroPlanet.pl - Wysyłka",
+                destination: "Gdańsk, ul. Długa 18",
+                pickupCode: "Weryfikacja tożsamości",
+                timeline: [
+                    { date: "2026-07-28 09:15", title: "Przesyłka w trasie", location: "Terminal Bydgoszcz", desc: "Transport przesyłki niebezpiecznej Klasy 1.4G." },
+                    { date: "2026-07-27 18:00", title: "Zarejestrowano w systemie kuriera", location: "Poznań", desc: "Etykieta ADR utworzona." }
+                ]
+            }
+        ];
+
+        let packagesDatabase = [];
+
+        async function initApp() {
+            let loaded = false;
+
+            // 1. First attempt: Fetch static paczki.json (works on GitHub Pages / Live Server)
+            try {
+                const response = await fetch('paczki.json', { cache: 'no-store' });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        packagesDatabase = data;
+                        loaded = true;
+                        console.log('Wczytano paczki z pliku paczki.json');
+                    }
+                }
+            } catch (e) {
+                console.log('Brak pliku paczki.json lub tryb lokalny, używam pamięci przeglądarki.');
+            }
+
+            // 2. Second attempt: LocalStorage cache
+            if (!loaded) {
+                const localData = localStorage.getItem('piroplanet_packages_db');
+                if (localData) {
+                    try {
+                        packagesDatabase = JSON.parse(localData);
+                        loaded = true;
+                    } catch (err) {
+                        console.error('Błąd odczytu danych lokalnych:', err);
+                    }
+                }
+            }
+
+            // 3. Fallback: Default mock packages
+            if (!loaded) {
+                packagesDatabase = DEFAULT_PACKAGES;
+                saveToLocalStorage();
+            }
+
+            // Handle direct URL tracking query parameter (e.g., ?track=PIR-984210)
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackParam = urlParams.get('track');
+            if (trackParam) {
+                document.getElementById('tracking-input').value = trackParam;
+                searchPackage(trackParam);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('piroplanet_packages_db', JSON.stringify(packagesDatabase));
+        }
+
+        function handleSearch(event) {
+            event.preventDefault();
+            const code = document.getElementById('tracking-input').value.trim();
+            if (code) {
+                searchPackage(code);
+            }
+        }
+
+        function quickTrack(code) {
+            document.getElementById('tracking-input').value = code;
+            searchPackage(code);
+        }
+
+        function searchPackage(code) {
+            const cleanCode = code.trim().toUpperCase();
+            const found = packagesDatabase.find(p => p.trackingNumber.toUpperCase() === cleanCode);
+
+            const resultContainer = document.getElementById('tracking-result-container');
+            const notFoundContainer = document.getElementById('tracking-not-found');
+
+            if (found) {
+                notFoundContainer.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                renderParcelDetails(found);
+                
+                // Update URL parameter without page reload
+                const newUrl = `${window.location.pathname}?track=${encodeURIComponent(found.trackingNumber)}`;
+                window.history.replaceState({ path: newUrl }, '', newUrl);
+
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                resultContainer.classList.add('hidden');
+                notFoundContainer.classList.remove('hidden');
+                notFoundContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function renderParcelDetails(pkg) {
+            document.getElementById('courier-badge').textContent = pkg.courier || 'Kurier';
+            document.getElementById('res-tracking-num').textContent = pkg.trackingNumber;
+            document.getElementById('res-title').textContent = pkg.title || 'Zamówienie PiroPlanet';
+            document.getElementById('res-est-date').textContent = pkg.estimatedDelivery || 'W trakcie ustalania';
+            document.getElementById('res-destination').textContent = pkg.destination || 'Nieokreślono';
+            document.getElementById('res-sender').textContent = pkg.sender || 'PiroPlanet.pl';
+            document.getElementById('res-pickup-code').textContent = pkg.pickupCode || 'Brak';
+
+            // Status Config Mapping
+            const statusConfig = {
+                'REGISTERED': { label: 'Zarejestrowana', bg: 'bg-slate-800', text: 'text-slate-300', border: 'border-slate-700', icon: 'fa-file-lines', step: 1 },
+                'IN_TRANSIT': { label: 'W trasie / ADR', bg: 'bg-amber-950/80', text: 'text-amber-400', border: 'border-amber-800/60', icon: 'fa-truck-fast', step: 2 },
+                'OUT_FOR_DELIVERY': { label: 'W doręczeniu', bg: 'bg-piro-950/90', text: 'text-piro-400', border: 'border-piro-800/60', icon: 'fa-box-open', step: 3 },
+                'DELIVERED': { label: 'Dostarczona', bg: 'bg-emerald-950/80', text: 'text-emerald-400', border: 'border-emerald-800/60', icon: 'fa-circle-check', step: 4 },
+                'EXCEPTION': { label: 'Opóźnienie / ADR', bg: 'bg-red-950/80', text: 'text-red-400', border: 'border-red-800/60', icon: 'fa-circle-exclamation', step: 2 }
+            };
+
+            const cfg = statusConfig[pkg.status] || statusConfig['REGISTERED'];
+
+            // Render Status Badge
+            const badgeEl = document.getElementById('status-badge');
+            badgeEl.className = `px-4 py-2 rounded-2xl border flex items-center space-x-2 font-bold text-sm ${cfg.bg} ${cfg.text} ${cfg.border}`;
+            badgeEl.innerHTML = `<i class="fa-solid ${cfg.icon}"></i> <span>${cfg.label}</span>`;
+
+            // Update Progress Stepper
+            for (let i = 1; i <= 4; i++) {
+                const stepIcon = document.getElementById(`step-icon-${i}`);
+                if (i <= cfg.step) {
+                    stepIcon.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all bg-gradient-to-tr from-piro-600 to-amber-500 text-white shadow-lg shadow-piro-600/30';
+                } else {
+                    stepIcon.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-all bg-slate-950 border border-slate-800 text-slate-600';
+                }
+            }
+
+            // Render Timeline Items
+            const timelineContainer = document.getElementById('timeline-list');
+            timelineContainer.innerHTML = '';
+
+            if (pkg.timeline && pkg.timeline.length > 0) {
+                pkg.timeline.forEach((item, index) => {
+                    const isFirst = index === 0;
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'relative flex items-start space-x-4 z-10';
+
+                    const dotBg = isFirst ? 'bg-piro-600 text-white ring-4 ring-piro-950 border border-amber-400' : 'bg-slate-800 text-slate-500 border border-slate-700';
+
+                    eventEl.innerHTML = `
+                        <div class="w-8 h-8 rounded-full ${dotBg} flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                            <i class="fa-solid ${isFirst ? 'fa-location-dot' : 'fa-check'}"></i>
+                        </div>
+                        <div class="flex-grow bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                                <h4 class="font-bold text-white text-sm">${escapeHtml(item.title)}</h4>
+                                <span class="text-xs font-mono text-slate-500">${escapeHtml(item.date)}</span>
+                            </div>
+                            <p class="text-xs font-semibold text-piro-500 mb-1"><i class="fa-solid fa-map-pin mr-1"></i>${escapeHtml(item.location || 'Punkt Logistyczny')}</p>
+                            ${item.desc ? `<p class="text-xs text-slate-400 mt-1">${escapeHtml(item.desc)}</p>` : ''}
+                        </div>
+                    `;
+                    timelineContainer.appendChild(eventEl);
+                });
+            } else {
+                timelineContainer.innerHTML = `<p class="text-xs text-slate-500 italic">Brak zarejestrowanych zmian statusu.</p>`;
+            }
+        }
+
+        function openAdminModal() {
+            renderAdminTable();
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+            closeParcelForm();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-parcel-table-body');
+            document.getElementById('parcel-count').textContent = packagesDatabase.length;
+            tbody.innerHTML = '';
+
+            packagesDatabase.forEach(pkg => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition';
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="font-mono font-bold text-white">${escapeHtml(pkg.trackingNumber)}</div>
+                        <div class="text-slate-400 text-[11px] truncate max-w-[180px]">${escapeHtml(pkg.title || 'Zamówienie')}</div>
+                    </td>
+                    <td class="p-3 text-slate-300">${escapeHtml(pkg.courier)}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold border ${getStatusStyle(pkg.status)}">
+                            ${pkg.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-2">
+                        <button onclick="quickTrack('${pkg.trackingNumber}'); closeAdminModal();" class="text-piro-500 hover:text-piro-400 p-1" title="Podgląd">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button onclick="editParcel('${pkg.id}')" class="text-slate-400 hover:text-white p-1" title="Edytuj">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteParcel('${pkg.id}')" class="text-red-400 hover:text-red-300 p-1" title="Usuń">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getStatusStyle(status) {
+            switch(status) {
+                case 'DELIVERED': return 'bg-emerald-950/80 text-emerald-400 border-emerald-800/60';
+                case 'OUT_FOR_DELIVERY': return 'bg-piro-950/80 text-piro-400 border-piro-800/60';
+                case 'IN_TRANSIT': return 'bg-amber-950/80 text-amber-400 border-amber-800/60';
+                case 'EXCEPTION': return 'bg-red-950/80 text-red-400 border-red-800/60';
+                default: return 'bg-slate-800 text-slate-300 border-slate-700';
+            }
+        }
+
+        function openAddParcelForm() {
+            document.getElementById('form-id').value = '';
+            document.getElementById('form-tracking').value = '';
+            document.getElementById('form-title-input').value = '';
+            document.getElementById('form-est').value = '';
+            document.getElementById('form-sender').value = 'PiroPlanet.pl - Magazyn Główny';
+            document.getElementById('form-dest').value = '';
+            document.getElementById('form-pickup').value = '';
+            document.getElementById('form-title').textContent = 'Dodaj nową przesyłkę';
+            document.getElementById('parcel-form-container').classList.remove('hidden');
+        }
+
+        function closeParcelForm() {
+            document.getElementById('parcel-form-container').classList.add('hidden');
+        }
+
+        function editParcel(id) {
+            const pkg = packagesDatabase.find(p => p.id === id);
+            if (!pkg) return;
+
+            document.getElementById('form-id').value = pkg.id;
+            document.getElementById('form-tracking').value = pkg.trackingNumber;
+            document.getElementById('form-courier').value = pkg.courier;
+            document.getElementById('form-title-input').value = pkg.title || '';
+            document.getElementById('form-status').value = pkg.status;
+            document.getElementById('form-est').value = pkg.estimatedDelivery || '';
+            document.getElementById('form-sender').value = pkg.sender || '';
+            document.getElementById('form-dest').value = pkg.destination || '';
+            document.getElementById('form-pickup').value = pkg.pickupCode || '';
+
+            document.getElementById('form-title').textContent = 'Edytuj przesyłkę';
+            document.getElementById('parcel-form-container').classList.remove('hidden');
+        }
+
+        function saveParcel(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-id').value;
+            const trackingNum = document.getElementById('form-tracking').value.trim().toUpperCase();
+
+            const existingIndex = packagesDatabase.findIndex(p => p.id === id);
+
+            const parcelData = {
+                id: id || trackingNum,
+                trackingNumber: trackingNum,
+                courier: document.getElementById('form-courier').value,
+                title: document.getElementById('form-title-input').value.trim(),
+                status: document.getElementById('form-status').value,
+                estimatedDelivery: document.getElementById('form-est').value.trim(),
+                sender: document.getElementById('form-sender').value.trim(),
+                destination: document.getElementById('form-dest').value.trim(),
+                pickupCode: document.getElementById('form-pickup').value.trim(),
+                timeline: existingIndex >= 0 ? packagesDatabase[existingIndex].timeline : [
+                    {
+                        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                        title: 'Zamówienie zarejestrowane w PiroPlanet',
+                        location: 'Magazyn Główny PiroPlanet',
+                        desc: 'Przesyłka oczekuje na kompletację i pakowanie ADR.'
+                    }
+                ]
+            };
+
+            if (existingIndex >= 0) {
+                packagesDatabase[existingIndex] = parcelData;
+                showToast('Zaktualizowano przesyłkę w bazie!', 'success');
+            } else {
+                packagesDatabase.unshift(parcelData);
+                showToast('Dodano nową przesyłkę!', 'success');
+            }
+
+            saveToLocalStorage();
+            renderAdminTable();
+            closeParcelForm();
+        }
+
+        function deleteParcel(id) {
+            packagesDatabase = packagesDatabase.filter(p => p.id !== id);
+            saveToLocalStorage();
+            renderAdminTable();
+            showToast('Usunięto paczkę z pamięci.', 'info');
+        }
+
+        function downloadJSONFile() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(packagesDatabase, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "paczki.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Pobrano plik paczki.json dla GitHub Pages!', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            if (type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-info text-piro-500';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showSection(name) {
+            if (name === 'search') {
+                document.getElementById('section-search').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Start Application on load
+        window.onload = function() {
+            initApp();
+        };
+    </script>
 </body>
 </html>
