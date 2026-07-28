@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiroPlanet.pl - Panel Admina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Nawigacja -->
+    <nav class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                <i class="fa-solid font-bold text-orange-500 text-2xl fa-fire"></i>
+                <span class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">PiroPlanet.pl</span>
+            </a>
+            <a href="index.html" class="px-4 py-2 rounded-lg font-semibold bg-slate-700 text-slate-300 hover:bg-slate-600 transition text-sm">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Strona Główna
+            </a>
+        </div>
+    </nav>
+
+    <!-- Główny Kontener Admina -->
+    <main class="max-w-6xl mx-auto p-4 flex-grow w-full space-y-6 py-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Panel Zarządzania Przesyłkami</h1>
+                <p class="text-slate-400 text-sm">Zarządzaj statusami paczek klientów w czasie rzeczywistym.</p>
+            </div>
+            <button id="btn-open-modal" class="px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-green-600/20">
+                <i class="fa-solid fa-plus"></i> Dodaj Paczkę
+            </button>
+        </div>
+
+        <!-- Tabela -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-900 text-slate-400 text-xs uppercase font-semibold">
+                        <tr>
+                            <th class="p-4">Nr Przesyłki</th>
+                            <th class="p-4">Odbiorca</th>
+                            <th class="p-4">Zawartość</th>
+                            <th class="p-4">Płatność</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-right">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y divide-slate-700">
+                        <!-- Generowane automatycznie przez JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Dodawania Paczki -->
+    <div id="add-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 class="text-xl font-bold text-white">Dodaj Nową Przesyłkę</h3>
+            <form id="add-package-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Numer przesyłki</label>
+                    <input type="text" id="input-id" placeholder="np. PP-1003" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white uppercase focus:border-orange-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Imię i Nazwisko</label>
+                    <input type="text" id="input-name" placeholder="Jan Kowalski" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-orange-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Adres i Telefon</label>
+                    <textarea id="input-address" rows="2" placeholder="ul. Prosta 1, Warszawa&#10;Tel: 123 456 789" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Zawartość (oddziel przecinkami)</label>
+                    <input type="text" id="input-items" placeholder="Wyrzutnia 100sh, Petardy FP3" required class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-orange-500 focus:outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Płatność</label>
+                        <select id="input-paid" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-orange-500 focus:outline-none">
+                            <option value="true">Opłacone</option>
+                            <option value="false">Pobranie</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs uppercase text-slate-400 mb-1 font-bold">Początkowy Status</label>
+                        <select id="input-status" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-orange-500 focus:outline-none">
+                            <option value="0">Wyruszyło z hurtowni</option>
+                            <option value="1">W drodze do sklepu</option>
+                            <option value="2">W trakcie pakowania</option>
+                            <option value="3">Gotowa do odbioru</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-4">
+                    <button type="button" id="btn-close-modal" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-semibold transition">Anuluj</button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 rounded-lg text-sm font-semibold text-white transition">Zapisz Paczkę</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
