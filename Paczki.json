@@ -1,39 +1,64 @@
-[
-{
-"id": "PIR-984210",
-"trackingNumber": "PIR-984211",
-"courier": "Kurier DPD (Materiały ADR / Wybuchowe)",
-"title": "Wyrzutnia Cobra 100 Strzałów 30mm + Rakiety Jupiter",
-"status": "OUT_FOR_DELIVERY",
-"estimatedDelivery": "Dzisiaj do godz. 17:30",
-"sender": "PiroPlanet.pl - Magazyn Główny",
-"destination": "Warszawa, ul. Marszałkowska 42",
-"pickupCode": "Wymagane ukończone 18 lat (ADR)",
-"timeline": [
-{
-"date": "2026-07-28 08:30",
-"title": "Wydano kurierowi do doręczenia",
-"location": "Oddział Kurierski Warszawa West",
-"desc": "Przesyłka spakowana i zabezpieczona zgodnie z wymogami ADR znajduje się u kuriera."
-},
-{
-"date": "2026-07-28 05:10",
-"title": "Przyjęto w centrum dystrybucji",
-"location": "Hub Przeładunkowy Warszawa",
-"desc": "Automatyczne sortowanie paczek pirotechnicznych."
-},
-{
-"date": "2026-07-27 19:40",
-"title": "W trasie między magazynami",
-"location": "Sortownia Centralna Poznań",
-"desc": "Przesyłka opuściła hub regionalny PiroPlanet."
-},
-{
-"date": "2026-07-27 14:15",
-"title": "Zamówienie spakowane i oznakowane ADR",
-"location": "Magazyn Główny PiroPlanet",
-"desc": "Paczka przekazana przewoźnikowi."
-}
-]
-}
-]
+//ORDERED_WHOLESALE – oznacza etap 1: Zamówienie przyjęte i przekazane do realizacji w hurtowni partnera.
+
+//SHIPPED_FROM_WHOLESALE – oznacza etap 2: Zamówienie zostało spakowane i wyjechało z hurtowni w drodze do sklepu.
+
+//ARRIVED_AT_STORE – oznacza etap 3: Dostawa z hurtowni dojechała i została przyjęta na magazyn sklepu stacjonarnego.
+
+//READY_FOR_PICKUP – oznacza etap 4: Towar jest w pełni przygotowany i czeka w punkcie obsługi na odbiór przez klienta.
+
+window.PIRO_PACKAGES = [
+  {
+    "id": "63468235",
+    "trackingNumber": "63468235",
+    "courier": "Dostawa Dedykowana PiroPlanet",
+    "title": "Zamówienie #63468235",
+    "status": "ORDERED_WHOLESALE",
+    "sender": "Hurtownia",
+    "destination": "Sklep PiroPlanet",
+    "pickupCode": "Kod Odbioru: 1525",
+    "timeline": [
+      {
+        "date": "2026-07-28 12:43",
+        "title": "Zamówione z hurtowni",
+        "location": "System PiroPlanet.pl",
+        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
+      }
+    ]
+  },
+  {
+    "id": "63468584",
+    "trackingNumber": "63468584",
+    "courier": "Dostawa Dedykowana PiroPlanet",
+    "title": "Zamówienie #63468584",
+    "status": "ORDERED_WHOLESALE",
+    "sender": "Hurtownia",
+    "destination": "Sklep PiroPlanet",
+    "pickupCode": "Kod Odbioru: 1525",
+    "timeline": [
+      {
+        "date": "2026-07-28 12:43",
+        "title": "Zamówione z hurtowni",
+        "location": "System PiroPlanet.pl",
+        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
+      }
+    ]
+  },
+  {
+    "id": "63468884",
+    "trackingNumber": "63468884",
+    "courier": "Dostawa Dedykowana PiroPlanet",
+    "title": "Zamówienie #63468884",
+    "status": "ORDERED_WHOLESALE",
+    "sender": "Hurtownia",
+    "destination": "Sklep PiroPlanet",
+    "pickupCode": "Kod Odbioru: 1525",
+    "timeline": [
+      {
+        "date": "2026-07-28 12:43",
+        "title": "Zamówione z hurtowni",
+        "location": "System PiroPlanet.pl",
+        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
+      }
+    ]
+  }
+];
