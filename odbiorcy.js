@@ -16,16 +16,16 @@ window.PIRO_RECIPIENTS = {
     "totalValue": "82,00 zł"
   },
   "63468584": {
-    "name": "-",
-    "phone": "+48 790 668 199",
+    "name": "Michał Stasiak",
+    "phone": "+48 733 490 951",
     "email": "-",
     "deliveryAddress": "Sklep PiroPlanet (Odbiór Osobisty)",
     "items": [
-      { "name": "Ps3 Shark Emiter Dźwięku 5 szt. ", "quantity": 1, "price": "30.00 zł" },
-      { "name": "RAKIETKI WHISTLING ROCKET TXR445А", "quantity": 2, "price": "5.00 zł" },
-      { "name": "Wysyłka", "quantity": 1, "price": "6.00 zł" }
+      { "name": "Petarda lontowa FT4 Funke Trueno No. 4", "quantity": 1, "price": "69.50 zł" },
+      { "name": "Funke Petarda 3 Blue FB3B - 20 szt/op", "quantity": 2, "price": "79.00 zł" },
+      { "name": "PETARDA BŁYSKOWA Z CRAKLINGIEM H2 X-BULL", "quantity": 1, "price": "25.00 zł" }
     ],
-    "totalValue": "41 zł"
+    "totalValue": "173.50 zł"
   },
   "63468884": {
     "name": "Jan Kowalski",
