@@ -12,18 +12,31 @@ window.PIRO_PACKAGES = [
     "trackingNumber": "63468235",
     "courier": "Dostawa Dedykowana PiroPlanet",
     "title": "Zamówienie #63468235",
-    "status": "SHIPPED_FROM_WHOLESALE",
+    "status": "ARRIVED_AT_STORE",
     "sender": "Hurtownia",
     "destination": "Sklep PiroPlanet",
     "pickupCode": "Kod Odbioru: 1525",
     "timeline": [
-      {
-        "date": "2026-07-30 18:33",
-        "title": "Wyjechało z hurtowni",
+            {
+        "date": "2026-07-31 18:33",
+        "title": "Jest do odbioru w sklepie",
         "location": "System PiroPlanet.pl",
         "desc": "Zamówienie zostało wysłane z hurtowni partnera."
       },
-       {
+      {
+        "date": "2026-07-30 18:33",
+        "title": "Dotarło do sklepu",
+        "location": "System PiroPlanet.pl",
+        "desc": "Zamówienie jest w sklepie i jest wypakowywane."
+      },
+        {
+        "date": "2026-07-28 12:43",
+        "title": "Wyjechało z hurtowni",
+        "location": "System PiroPlanet.pl",
+        "desc": "Zamówienie zostało wysłane w hurtowni partnera."
+      }
+    ]
+  },       {
         "date": "2026-07-28 12:43",
         "title": "Zamówione z hurtowni",
         "location": "System PiroPlanet.pl",
