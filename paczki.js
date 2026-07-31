@@ -36,60 +36,7 @@ window.PIRO_PACKAGES = [
         "desc": "Zamówienie zostało wysłane w hurtowni partnera."
       }
     ]
-  },       {
-        "date": "2026-07-28 12:43",
-        "title": "Zamówione z hurtowni",
-        "location": "System PiroPlanet.pl",
-        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
-       }
-    ]
-  },
-  {
-    "id": "63468584",
-    "trackingNumber": "63468584",
-    "courier": "Dostawa Dedykowana PiroPlanet",
-    "title": "Zamówienie #63468584",
-    "status": "READY_FOR_PICKUP",
-    "sender": "Hurtownia",
-    "destination": "Sklep PiroPlanet",
-    "pickupCode": "Kod Odbioru: 1525",
-    "timeline": [
-            {
-        "date": "2026-07-31 18:33",
-        "title": "Jest do odbioru w sklepie",
-        "location": "System PiroPlanet.pl",
-        "desc": "Zamówienie zostało wysłane z hurtowni partnera."
-      },
-      {
-        "date": "2026-07-30 18:33",
-        "title": "Wyjechało z hurtowni",
-        "location": "System PiroPlanet.pl",
-        "desc": "Zamówienie zostało wysłane z hurtowni partnera."
-      },
-        {
-        "date": "2026-07-28 12:43",
-        "title": "Zamówione z hurtowni",
-        "location": "System PiroPlanet.pl",
-        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
-      }
-    ]
-  },
-  {
-    "id": "63468884",
-    "trackingNumber": "63468884",
-    "courier": "Dostawa Dedykowana PiroPlanet",
-    "title": "Zamówienie #63468884",
-    "status": "ORDERED_WHOLESALE",
-    "sender": "Hurtownia",
-    "destination": "Sklep PiroPlanet",
-    "pickupCode": "Kod Odbioru: 1525",
-    "timeline": [
-      {
-        "date": "2026-07-28 12:43",
-        "title": "Zamówione z hurtowni",
-        "location": "System PiroPlanet.pl",
-        "desc": "Zamówienie przekazane do realizacji w hurtowni partnera."
-      }
-    ]
+  },       
+]
   }
 ];
